@@ -1,0 +1,36 @@
+body{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+}
+
+.grid-container{
+    display: grid;
+    width: fit-content;
+    height: fit-content;
+    background-color: #303130;
+    grid-gap: 5px;
+}
+
+.safe{
+    background-color: #ffda00;
+}
+
+.mine{
+    background-color: #FF4747;
+}
+
+.near{
+    background-color: #47B2FF;
+}
+
+.hidden{
+    opacity: 0.4;
+    background-color: #c4c4c4;
+}
+
+.visible{
+    opacity: 1;
+}
