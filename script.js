@@ -2,10 +2,17 @@ getNewEmptyBoard = () => new Array(INDEX).fill(-2).map(() => new Array(INDEX).fi
 
 let INDEX = 9 // 10 mines
 let BOARD = getNewEmptyBoard()
+let minesPosition = []
 let alreadyCreated = false
 
 const boardElement = document.getElementById("board")
-
+const playButton = document.getElementById("btn")
+playButton.onclick  =() => {
+    setGrid(9, 9);
+    alreadyCreated = false;
+    document.getElementById('overlay').style.display = 'none';
+    playButton.innerText = "play"
+}
 
 // setGrid(9, 9)
 
@@ -25,13 +32,16 @@ function printMap(BOARD) {
 // Logic
 
 function updateCells(row, column) {
-    if(BOARD[row][column] == -1) {
-        setCellsState(row, column, false)
-        return alert("fai schifo")
+    if(BOARD[row][column] != -1) {
+        unlockSafeCells(row, column)
+        return
     }
-    else if (BOARD[row][column] > 0) setCellsState(row, column, false)
-    else unlockSafeCells(row, column)
-    console.log(BOARD)
+
+    alert("fai schifo")
+    for (const mine of minesPosition)
+        setCellsState(mine[0], mine[1], false)
+    coverOver()
+    playButton.innerText = "play again"
 }
 
 function unlockSafeCells(row, column) {
@@ -74,16 +84,18 @@ function createMap(r, c, index, numberOfMines) {
 
 function getMinesPosition(r, c, index, numberOfMines) {
     let safeCells = getNeighbours(r, c)
-    let mineRow, mineColumn, minesPlaced = 1, minesPosition = []
+    let mineRow, mineColumn, minesPlaced = 0, mPosition = []
 
     while (minesPlaced < numberOfMines){
         mineRow = Math.floor(Math.random() * index);
         mineColumn = Math.floor(Math.random() * index);
         if (safeCells.some(item => JSON.stringify(item) == JSON.stringify([mineRow, mineColumn]))) continue
+        if (mPosition.some(item => JSON.stringify(item) == JSON.stringify([mineRow, mineColumn]))) continue
         minesPlaced++
-        minesPosition.push([mineRow, mineColumn])
+        mPosition.push([mineRow, mineColumn])
     }
-    return minesPosition
+    minesPosition = Array.from(mPosition)
+    return mPosition
 }
 
 function getNeighbours(r, c) {
@@ -152,7 +164,7 @@ function setUpGraphic(board, index) {
             cell.onclick = () => {
                 if (!alreadyCreated) {
                     BOARD = createMap(r, c, INDEX, 10)
-                    console.log( printMap(BOARD))
+                    // console.log(printMap(BOARD))
                     alreadyCreated = true
                 }
                 updateCells(r, c)
@@ -163,6 +175,10 @@ function setUpGraphic(board, index) {
             else if(board[r][c] >= 0) cell.className = "near hidden"
             boardElement.appendChild(cell)
         }
+}
+
+function coverOver() {
+    document.getElementById("overlay").style.display = "block";
 }
 
 function deleteChildren() {
