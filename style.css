@@ -7,6 +7,7 @@ body{
 }
 
 .grid-container{
+
     display: grid;
     width: fit-content;
     height: fit-content;
@@ -15,7 +16,7 @@ body{
 }
 
 .safe{
-    background-color: #ffda00;
+    background-color: #6eff35;
 }
 
 .mine{
@@ -23,7 +24,7 @@ body{
 }
 
 .near{
-    background-color: #47B2FF;
+    background-color: #d2ac0c;
 }
 
 .hidden{
@@ -33,4 +34,19 @@ body{
 
 .visible{
     opacity: 1;
+}
+
+.checked{
+
+}
+
+#overlay {
+    display: none; z-index: 99;
+    width: 100%; height: 100%;
+    position: absolute; top: 0; left: 0;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+#to-cover{
+    position: relative;
 }
