@@ -6,6 +6,8 @@ let minesPosition = []
 let alreadyCreated = false
 
 const boardElement = document.getElementById("board")
+boardElement.oncontextmenu = () => false
+
 const playButton = document.getElementById("btn")
 playButton.onclick  =() => {
     setGrid(9, 9);
@@ -117,6 +119,7 @@ function setCellsState(r, c, hidden = true) {
     }
 
     cell.className = (hidden) ? cell.className + " hidden" : cell.className + " visible"
+    cell.oncontextmenu = () => false
 }
 
 function isVisible(r, c) {
@@ -169,10 +172,23 @@ function setUpGraphic(board, index) {
                 }
                 updateCells(r, c)
             }
+            cell.oncontextmenu = () => {
+                if (!alreadyCreated) return false
+
+                let isThereBackGround = (cell.style.backgroundImage.indexOf("rickroll-face") != -1)
+                if (isThereBackGround) {
+                    cell.style.backgroundImage = "none"
+                    return false
+                }
+
+                cell.style.backgroundImage = "url('rickroll-face-1.jpg')"
+                return false
+            }
             cell.id = `${r}:${c}`
             if (board[r][c] == -2) cell.className = "safe hidden"
             else if(board[r][c] == -1) cell.className = "mine hidden"
             else if(board[r][c] >= 0) cell.className = "near hidden"
+            cell.className += " cell"
             boardElement.appendChild(cell)
         }
 }
@@ -188,5 +204,3 @@ function deleteChildren() {
         first = boardElement.firstElementChild;
     }
 }
-
-
