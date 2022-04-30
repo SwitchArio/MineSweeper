@@ -181,7 +181,7 @@ function setUpGraphic(board, index) {
                     return false
                 }
 
-                cell.style.backgroundImage = "url('rickroll-face-1.jpg')"
+                cell.style.backgroundImage = "url('data/rickroll-face-1.jpg')"
                 return false
             }
             cell.id = `${r}:${c}`
