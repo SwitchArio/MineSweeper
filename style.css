@@ -15,6 +15,16 @@ body{
     grid-gap: 5px;
 }
 
+.cell{
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+
 .safe{
     background-color: #6eff35;
 }
@@ -34,10 +44,6 @@ body{
 
 .visible{
     opacity: 1;
-}
-
-.checked{
-
 }
 
 #overlay {
