@@ -4,6 +4,8 @@ body{
     justify-content: center;
     align-items: center;
     margin: 0;
+    font-family: "Segoe UI Black", serif;
+
 }
 
 .grid-container{
@@ -13,16 +15,6 @@ body{
     height: fit-content;
     background-color: #303130;
     grid-gap: 5px;
-}
-
-.cell{
-    overflow-x: hidden;
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: cover;
 }
 
 .safe{
@@ -42,9 +34,21 @@ body{
     background-color: #c4c4c4;
 }
 
+.cell{
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+
+}
+
 .visible{
     opacity: 1;
 }
+
 
 #overlay {
     display: none; z-index: 99;
@@ -55,4 +59,31 @@ body{
 
 #to-cover{
     position: relative;
+}
+
+.commands {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 15%;
+}
+
+/* PLAY BUTTON */
+.btn {
+    padding: 10px 25px;
+    border: 2px solid #000000;
+    background: #ffffff;
+    transition: all 0.3s ease;
+    font-family: "Segoe UI Black", serif;
+}
+
+.btn:hover {
+    color: #ffffff;
+    background: #000000;
+}
+
+/* RADIO BUTTONS MENU */
+
+#level label {
+    display: flex;
 }
