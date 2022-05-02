@@ -1,7 +1,7 @@
 getNewEmptyBoard = () => new Array(INDEX).fill(-2).map(() => new Array(INDEX).fill(-2))
 
-let INDEX = 9 // 10 mines
-let BOARD = getNewEmptyBoard()
+let INDEX
+let BOARD
 let minesPosition = []
 let alreadyCreated = false
 
@@ -9,14 +9,19 @@ const boardElement = document.getElementById("board")
 boardElement.oncontextmenu = () => false
 
 const playButton = document.getElementById("btn")
-playButton.onclick  =() => {
-    setGrid(9, 9);
+playButton.onclick  = () => {
+    // let data = document.getElementById("level").value.split("-")
+    let labels = document.getElementById("level").children
+    let value
+    console.log(labels)
+    for (let label of labels) {
+        if (label.firstElementChild.checked) value = label.firstElementChild.value.split("-")
+    }
+    setGrid(eval(value[0]), eval(value[0]), eval(value[1]));
     alreadyCreated = false;
     document.getElementById('overlay').style.display = 'none';
-    playButton.innerText = "play"
+    playButton.innerText = "Gioca"
 }
-
-// setGrid(9, 9)
 
 function printMap(BOARD) {
     let stringMap = "";
@@ -43,7 +48,7 @@ function updateCells(row, column) {
     for (const mine of minesPosition)
         setCellsState(mine[0], mine[1], false)
     coverOver()
-    playButton.innerText = "play again"
+    playButton.innerText = "Gioca ancora"
 }
 
 function unlockSafeCells(row, column) {
@@ -117,6 +122,11 @@ function setCellsState(r, c, hidden = true) {
         cell.className = "near"
         cell.innerText = neighboursCounter(BOARD,INDEX - 1, r, c).toString()
     }
+    let isThereBackGround = (cell.style.backgroundImage.indexOf("rickroll-face") != -1)
+    if(isThereBackGround) {
+        cell.style.backgroundImage = "none"
+        cell.style.opacity = "1"
+    }
 
     cell.className = (hidden) ? cell.className + " hidden" : cell.className + " visible"
     cell.oncontextmenu = () => false
@@ -149,24 +159,26 @@ function neighboursCounter(board, index, r, c) {
 
 // Graphic
 
-function setGrid(row, columns) {
+function setGrid(row, columns, mines) {
     INDEX = row
     INDEX = columns
-    boardElement.style.gridTemplateRows = `repeat(${INDEX}, 40px)`
-    boardElement.style.gridTemplateColumns = `repeat(${INDEX}, 40px)`
+    BOARD = getNewEmptyBoard()
+    // 1920 1080
+    boardElement.style.gridTemplateRows = `repeat(${INDEX}, 5vh)`
+    boardElement.style.gridTemplateColumns = `repeat(${INDEX}, 5vh)`
     console.log(`impostato su ${INDEX}x${INDEX} (RIGHExCOLONNE)`)
 
-    setUpGraphic(BOARD, INDEX)
+    setUpGraphic(BOARD, INDEX, mines)
 }
 
-function setUpGraphic(board, index) {
+function setUpGraphic(board, index, mines) {
     deleteChildren()
     for (let r = 0; r < index; r++)
         for (let c = 0; c < index; c++){
             let cell = document.createElement("div")
             cell.onclick = () => {
                 if (!alreadyCreated) {
-                    BOARD = createMap(r, c, INDEX, 10)
+                    BOARD = createMap(r, c, INDEX, mines)
                     // console.log(printMap(BOARD))
                     alreadyCreated = true
                 }
@@ -178,10 +190,12 @@ function setUpGraphic(board, index) {
                 let isThereBackGround = (cell.style.backgroundImage.indexOf("rickroll-face") != -1)
                 if (isThereBackGround) {
                     cell.style.backgroundImage = "none"
+                    cell.style.opacity = "0.4"
                     return false
                 }
 
                 cell.style.backgroundImage = "url('data/rickroll-face-1.jpg')"
+                cell.style.opacity = "1"
                 return false
             }
             cell.id = `${r}:${c}`
@@ -204,3 +218,6 @@ function deleteChildren() {
         first = boardElement.firstElementChild;
     }
 }
+
+
+
