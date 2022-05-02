@@ -6,13 +6,21 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<p><a href="https://github.com/SwitchArio/MineSweeper">link github</a> </p>
-    <button id="btn">play</button>
-    <div id="to-cover">
-        <div class="grid-container" id="board"></div>
-        <div id="overlay"></div>
+    <p><a href="https://github.com/SwitchArio/MineSweeper">link github</a> </p>
+    <div class="commands">
+        <button id="btn" class="btn">Gioca</button>
+        <div id="level">
+            <label><input type="radio" name="level" value="9-10" checked="checked">Facile</label>
+            <label><input type="radio" name="level" value="16-40">Medio</label>
+            <label><input type="radio" name="level" value="24-99">Difficile</label>
+            <label><input type="radio" name="level" value="20-390">Impossibile</label>
+        </div>
     </div>
-
+    <br>
+    <div id="to-cover">
+            <div class="grid-container" id="board"></div>
+            <div id="overlay"></div>
+        </div>
     <script src="script.js"></script>
 </body>
 </html>
