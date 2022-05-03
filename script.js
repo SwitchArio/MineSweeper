@@ -203,7 +203,7 @@ function setUpGraphic(board, index, mines) {
 function updateStats(firstMove=false){
     let stats = document.getElementById("stats")
     if (firstMove) {
-        stats.innerText = `probabilità di trovare una mina: 0%\nla prima è sicura ;)`
+        stats.innerText = `probabilità di trovare una mina: 0%\nnon puoi sbagliare ;)`
         return
     }
     stats.innerText = `probabilità di trovare una mina: ${Math.round(MINES/HIDDENS_CELL*1000)/10}% (${MINES}/${HIDDENS_CELL})`
