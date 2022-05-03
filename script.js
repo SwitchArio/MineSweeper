@@ -1,6 +1,6 @@
 getNewEmptyBoard = () => new Array(INDEX).fill(-2).map(() => new Array(INDEX).fill(-2))
 
-let INDEX, BOARD, MINES, HIDDENS_CELL, minesPosition = [], alreadyCreated = false
+let INDEX, BOARD, MINES, HIDDEN_MINES, HIDDENS_CELL, minesPosition = [], alreadyCreated = false
 
 const boardElement = document.getElementById("board")
 boardElement.oncontextmenu = () => false
@@ -31,7 +31,8 @@ function updateCells(row, column) {
     for (const mine of minesPosition)
         setCellsState(mine[0], mine[1], false)
 
-    document.getElementById("overlay").style.display = "block"; // cover over
+    gameOver(false)
+
     playButton.innerText = "Gioca ancora"
 }
 
@@ -41,6 +42,7 @@ function unlockSafeCells(row, column) {
     setCellsState(row, column, false)
     HIDDENS_CELL--
     updateStats()
+    if (HIDDENS_CELL-MINES == 0) gameOver(true)
 
     if (BOARD[row][column] >= -1) return
 
@@ -53,6 +55,32 @@ function unlockSafeCells(row, column) {
         if(BOARD[row][column] >= -1) continue
         unlockSafeCells(neighbour[0], neighbour[1])
     }
+}
+
+function setCellsState(r, c, hidden = true) {
+    if(r < 0 || c < 0 || r >= INDEX || c >= INDEX) return
+    let cell = document.getElementById(`${r}:${c}`)
+    if(BOARD[r][c] == -2) cell.className = "safe "
+    if(BOARD[r][c] == -1) cell.className = "mine "
+    if(BOARD[r][c] > 0) {
+        cell.className = "near "
+        switch (BOARD[r][c]) {
+            case 1: cell.className += "n1 "; break
+            case 2: cell.className += "n2 "; break
+            case 3: cell.className += "n3 "; break
+            case 4: cell.className += "n4 "; break
+            case 5: cell.className += "n5 "; break
+        }
+        cell.innerText = neighboursCounter(BOARD,INDEX - 1, r, c).toString()
+    }
+
+    HIDDEN_MINES += (cell.style.backgroundImage.indexOf("rickroll-face") != -1) ? 1 : 0
+    updateStats()
+
+    cell.style.opacity = "1"
+    cell.style.backgroundImage = "none"
+    cell.oncontextmenu = () => false
+    cell.className += hidden ? "hidden" : "visible"
 }
 
 function createMap(r, c, index, numberOfMines) {
@@ -88,46 +116,6 @@ function getMinesPosition(r, c, index, numberOfMines) {
     return mPosition
 }
 
-function getNeighbours(r, c) {
-    return [
-        [r-1, c-1], [r-1, c], [r-1, c+1],
-        [r, c-1], [r, c], [r, c+1],
-        [r+1, c-1], [r+1, c], [r+1, c+1]
-    ]
-}
-
-function setCellsState(r, c, hidden = true) {
-    if(r < 0 || c < 0 || r >= INDEX || c >= INDEX) return
-    let cell = document.getElementById(`${r}:${c}`)
-    if(BOARD[r][c] == -2) cell.className = "safe "
-    if(BOARD[r][c] == -1) cell.className = "mine "
-    if(BOARD[r][c] > 0) {
-        cell.className = "near "
-        switch (BOARD[r][c]) {
-            case 1: cell.className += "n1 "; break
-            case 2: cell.className += "n2 "; break
-            case 3: cell.className += "n3 "; break
-            case 4: cell.className += "n4 "; break
-            case 5: cell.className += "n5 "; break
-        }
-        cell.innerText = neighboursCounter(BOARD,INDEX - 1, r, c).toString()
-    }
-
-    MINES += (cell.style.backgroundImage.indexOf("rickroll-face") != -1) ? 1 : 0
-    updateStats()
-
-    cell.style.opacity = "1"
-    cell.style.backgroundImage = "none"
-    cell.oncontextmenu = () => false
-    cell.className += hidden ? "hidden" : "visible"
-}
-
-function isVisible(r, c) {
-    if(r < 0 || c < 0 || r >= INDEX || c >= INDEX) return true
-    let cell = document.getElementById(`${r}:${c}`)
-    return cell.className.indexOf("hidden") == -1;
-}
-
 function neighboursCounter(board, index, r, c) {
     let neighbours = 0
     if(r > 0){
@@ -147,6 +135,20 @@ function neighboursCounter(board, index, r, c) {
     return neighbours
 }
 
+function getNeighbours(r, c) {
+    return [
+        [r-1, c-1], [r-1, c], [r-1, c+1],
+        [r, c-1], [r, c], [r, c+1],
+        [r+1, c-1], [r+1, c], [r+1, c+1]
+    ]
+}
+
+function isVisible(r, c) {
+    if(r < 0 || c < 0 || r >= INDEX || c >= INDEX) return true
+    let cell = document.getElementById(`${r}:${c}`)
+    return cell.className.indexOf("hidden") == -1;
+}
+
 // Graphic
 
 function setGrid(row, columns, mines) {
@@ -157,7 +159,7 @@ function setGrid(row, columns, mines) {
     boardElement.style.gridTemplateColumns = `repeat(${INDEX}, 5vh)`
     console.log(`impostato su ${INDEX}x${INDEX} (RIGHExCOLONNE)`)
 
-    MINES = mines
+    HIDDEN_MINES = MINES = mines
     HIDDENS_CELL = INDEX*INDEX
     updateStats(true)
     setUpGraphic(BOARD, INDEX, mines)
@@ -179,38 +181,38 @@ function setUpGraphic(board, index, mines) {
                 if (!alreadyCreated) return false
 
                 let isThereBackGround = (cell.style.backgroundImage.indexOf("rickroll-face") != -1)
-                cell.style.backgroundImage = isThereBackGround ? "none" : "url('data/rickroll-face-1.jpg')"
+                cell.style.backgroundImage = isThereBackGround ? "none" : "url('data/other data/rickroll-face.jpg')"
                 cell.style.opacity = isThereBackGround ? "0.4" : "1"
-                MINES += isThereBackGround ? 1 : -1
+                HIDDEN_MINES += isThereBackGround ? 1 : -1
                 updateStats()
 
                 return false
             }
             cell.id = `${r}:${c}`
-            if (board[r][c] == -2) cell.className = "safe hidden"
-            else if(board[r][c] == -1) cell.className = "mine hidden"
-            else if(board[r][c] > 0) {
-                cell.className = "near hidden "
-
-            }
-            console.log(board[r][c])
-
-            cell.className += " cell"
+            cell.className = "safe hidden cell"
             boardElement.appendChild(cell)
         }
 }
 
 function updateStats(firstMove=false){
     let stats = document.getElementById("stats")
-    if (firstMove) {
+    if (firstMove)
         stats.innerText = `probabilità di trovare una mina: 0%\nnon puoi sbagliare ;)`
-        return
-    }
-    stats.innerText = `probabilità di trovare una mina: ${Math.round(MINES/HIDDENS_CELL*1000)/10}% (${MINES}/${HIDDENS_CELL})`
+    else
+        stats.innerText = `probabilità di trovare una mina: ${Math.round(HIDDEN_MINES/HIDDENS_CELL*1000)/10}% (${HIDDEN_MINES}/${HIDDENS_CELL})`
 }
 
-function victory() {
-
+function gameOver(victory) {
+    let nOfBackgrounds = 3;
+    let ending = victory ? "win" : "lost"
+    let chosenBackground = `data/${ending}-background/img${Math.floor(Math.random() * nOfBackgrounds)}.jpg`
+    let overlayDiv = document.getElementById("overlay")
+    overlayDiv.style.background = `url("${chosenBackground}") no-repeat center`;
+    overlayDiv.style.backgroundSize = "cover";
+    overlayDiv.style.opacity = "0.6";
+    overlayDiv.style.display = "block"; // cover over
+    overlayDiv.style.display = "block"; // cover over
+    overlayDiv.innerText = victory ? "HAI VINTO" : "HAI PERSO"
 }
 
 function deleteChildren() {
@@ -220,6 +222,3 @@ function deleteChildren() {
         first = boardElement.firstElementChild;
     }
 }
-
-
-
