@@ -8,8 +8,13 @@
 <body>
     <p><a href="https://github.com/SwitchArio/MineSweeper">Github Link</a> </p>
     <div class="commands">
-        <button id="btn" class="btn">Gioca</button>
-        <div id="level">
+        <div id="stats" class="commands-element">
+            probabilità di trovare una mina: -/-
+        </div>
+        <div id="btn-container">
+            <button id="btn" class="btn commands-element">Gioca</button>
+        </div>
+        <div id="level" class="commands-element">
             <label><input type="radio" name="level" value="9-10" checked="checked">Facile</label>
             <label><input type="radio" name="level" value="16-40">Medio</label>
             <label><input type="radio" name="level" value="24-99">Difficile</label>
