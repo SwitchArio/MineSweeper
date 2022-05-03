@@ -5,7 +5,7 @@ body{
     align-items: center;
     margin: 0;
     font-family: "Segoe UI Black", serif;
-
+    background: #303130;
 }
 
 .grid-container{
@@ -17,21 +17,41 @@ body{
     grid-gap: 5px;
 }
 
+.safe, .near{
+    font-size: 30px;
+    font-family: fantasy;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
 .safe{
-    background-color: #6eff35;
+    background-color: #303130;
+}
+
+.near{
+    background-color: #303130;
 }
 
 .mine{
     background-color: #FF4747;
 }
 
-.near{
-    background-color: #d2ac0c;
+.n1{
+    color: #44A2E5;
 }
-
-.hidden{
-    opacity: 0.4;
-    background-color: #c4c4c4;
+.n2{
+    color: #37FF4B;
+}
+.n3{
+    color: #FF4747;
+}
+.n4{
+    color: #E537B4;
+}
+.n5{
+    color: #ffda00;
 }
 
 .cell{
@@ -42,13 +62,16 @@ body{
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
+}
 
+.hidden{
+    opacity: 0.4;
+    background-color: #5D5D5D;
 }
 
 .visible{
     opacity: 1;
 }
-
 
 #overlay {
     display: none; z-index: 99;
@@ -64,22 +87,43 @@ body{
 .commands {
     display: flex;
     align-items: center;
-    justify-content: space-around;
-    width: 15%;
+    justify-content: space-between;
+    width: 40%;
 }
+
+#stats{
+    text-align: center;
+    width: 30%;
+}
+
+#btn-container {
+    display: flex;
+    flex-direction: column;
+}
+
+#level {
+    width: 30%;
+}
+
+.commands-element{
+    padding: 0 5px;
+    color: #ffffff;
+}
+
 
 /* PLAY BUTTON */
 .btn {
+    color: white;
     padding: 10px 25px;
-    border: 2px solid #000000;
-    background: #ffffff;
+    border: 2px solid #ffffff;
+    background: #303130;
     transition: all 0.3s ease;
     font-family: "Segoe UI Black", serif;
 }
 
 .btn:hover {
-    color: #ffffff;
-    background: #000000;
+    color: #303130;
+    background: #ffffff;
 }
 
 /* RADIO BUTTONS MENU */
@@ -93,12 +137,8 @@ body{
 
 a {
     position: relative;
-    color: #000;
+    color: #ffffff;
     text-decoration: none;
-}
-
-a:hover {
-    color: #000;
 }
 
 a::before {
@@ -109,13 +149,13 @@ a::before {
     bottom: 0;
     left: 0;
 
-    background-color: #000;
+    background-color: #ffffff;
 
     transform: scaleX(0);
     transition: transform 0.3s;
     content: "";
-
 }
+
 a:hover::before {
     transform: scaleX(1);
 }
