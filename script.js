@@ -1,39 +1,22 @@
 getNewEmptyBoard = () => new Array(INDEX).fill(-2).map(() => new Array(INDEX).fill(-2))
 
-let INDEX
-let BOARD
-let minesPosition = []
-let alreadyCreated = false
+let INDEX, BOARD, MINES, HIDDENS_CELL, minesPosition = [], alreadyCreated = false
 
 const boardElement = document.getElementById("board")
 boardElement.oncontextmenu = () => false
 
 const playButton = document.getElementById("btn")
 playButton.onclick  = () => {
-    // let data = document.getElementById("level").value.split("-")
-    let labels = document.getElementById("level").children
-    let value
-    console.log(labels)
-    for (let label of labels) {
-        if (label.firstElementChild.checked) value = label.firstElementChild.value.split("-")
-    }
-    setGrid(eval(value[0]), eval(value[0]), eval(value[1]));
-    alreadyCreated = false;
-    document.getElementById('overlay').style.display = 'none';
     playButton.innerText = "Gioca"
-}
+    document.getElementById('overlay').style.display = 'none';
+    alreadyCreated = false;
 
-function printMap(BOARD) {
-    let stringMap = "";
-    for (let i = 0; i < INDEX; i++) {
-        for (let j = 0; j < INDEX; j++) {
-            if(BOARD[i][j] == -1) stringMap += "X"
-            else if(neighboursCounter(BOARD, INDEX-1, i, j) > 0) stringMap += "#"
-            else stringMap += "O"
-        }
-        stringMap += "\n"
-    }
-    return stringMap
+    let value, labels = document.getElementById("level").children
+    for (let label of labels)
+        if (label.firstElementChild.checked)
+            value = label.firstElementChild.value.split("-")
+
+    setGrid(eval(value[0]), eval(value[0]), eval(value[1]));
 }
 
 // Logic
@@ -47,24 +30,24 @@ function updateCells(row, column) {
     alert("fai schifo")
     for (const mine of minesPosition)
         setCellsState(mine[0], mine[1], false)
-    coverOver()
+
+    document.getElementById("overlay").style.display = "block"; // cover over
     playButton.innerText = "Gioca ancora"
 }
 
 function unlockSafeCells(row, column) {
-
     if(row < 0 || column < 0 || row >= INDEX || column >= INDEX) return
+
     setCellsState(row, column, false)
+    HIDDENS_CELL--
+    updateStats()
+
     if (BOARD[row][column] >= -1) return
-
-
 
     let neighbours = getNeighbours(row, column)
     for (const neighbour of neighbours) {
-        // alert(neighbour[0] + " " + neighbour[1])
         if(row == neighbour[0] && column == neighbour[1]) continue
         if(isVisible(neighbour[0], neighbour[1])) continue
-        // alert("arrivato")
         setCellsState(neighbour[0], neighbour[1], false)
 
         if(BOARD[row][column] >= -1) continue
@@ -116,20 +99,27 @@ function getNeighbours(r, c) {
 function setCellsState(r, c, hidden = true) {
     if(r < 0 || c < 0 || r >= INDEX || c >= INDEX) return
     let cell = document.getElementById(`${r}:${c}`)
-    if(BOARD[r][c] == -2) cell.className = "safe"
-    if(BOARD[r][c] == -1) cell.className = "mine"
+    if(BOARD[r][c] == -2) cell.className = "safe "
+    if(BOARD[r][c] == -1) cell.className = "mine "
     if(BOARD[r][c] > 0) {
-        cell.className = "near"
+        cell.className = "near "
+        switch (BOARD[r][c]) {
+            case 1: cell.className += "n1 "; break
+            case 2: cell.className += "n2 "; break
+            case 3: cell.className += "n3 "; break
+            case 4: cell.className += "n4 "; break
+            case 5: cell.className += "n5 "; break
+        }
         cell.innerText = neighboursCounter(BOARD,INDEX - 1, r, c).toString()
     }
-    let isThereBackGround = (cell.style.backgroundImage.indexOf("rickroll-face") != -1)
-    if(isThereBackGround) {
-        cell.style.backgroundImage = "none"
-        cell.style.opacity = "1"
-    }
 
-    cell.className = (hidden) ? cell.className + " hidden" : cell.className + " visible"
+    MINES += (cell.style.backgroundImage.indexOf("rickroll-face") != -1) ? 1 : 0
+    updateStats()
+
+    cell.style.opacity = "1"
+    cell.style.backgroundImage = "none"
     cell.oncontextmenu = () => false
+    cell.className += hidden ? "hidden" : "visible"
 }
 
 function isVisible(r, c) {
@@ -163,11 +153,13 @@ function setGrid(row, columns, mines) {
     INDEX = row
     INDEX = columns
     BOARD = getNewEmptyBoard()
-    // 1920 1080
     boardElement.style.gridTemplateRows = `repeat(${INDEX}, 5vh)`
     boardElement.style.gridTemplateColumns = `repeat(${INDEX}, 5vh)`
     console.log(`impostato su ${INDEX}x${INDEX} (RIGHExCOLONNE)`)
 
+    MINES = mines
+    HIDDENS_CELL = INDEX*INDEX
+    updateStats(true)
     setUpGraphic(BOARD, INDEX, mines)
 }
 
@@ -179,7 +171,6 @@ function setUpGraphic(board, index, mines) {
             cell.onclick = () => {
                 if (!alreadyCreated) {
                     BOARD = createMap(r, c, INDEX, mines)
-                    // console.log(printMap(BOARD))
                     alreadyCreated = true
                 }
                 updateCells(r, c)
@@ -188,27 +179,38 @@ function setUpGraphic(board, index, mines) {
                 if (!alreadyCreated) return false
 
                 let isThereBackGround = (cell.style.backgroundImage.indexOf("rickroll-face") != -1)
-                if (isThereBackGround) {
-                    cell.style.backgroundImage = "none"
-                    cell.style.opacity = "0.4"
-                    return false
-                }
+                cell.style.backgroundImage = isThereBackGround ? "none" : "url('data/rickroll-face-1.jpg')"
+                cell.style.opacity = isThereBackGround ? "0.4" : "1"
+                MINES += isThereBackGround ? 1 : -1
+                updateStats()
 
-                cell.style.backgroundImage = "url('data/rickroll-face-1.jpg')"
-                cell.style.opacity = "1"
                 return false
             }
             cell.id = `${r}:${c}`
             if (board[r][c] == -2) cell.className = "safe hidden"
             else if(board[r][c] == -1) cell.className = "mine hidden"
-            else if(board[r][c] >= 0) cell.className = "near hidden"
+            else if(board[r][c] > 0) {
+                cell.className = "near hidden "
+
+            }
+            console.log(board[r][c])
+
             cell.className += " cell"
             boardElement.appendChild(cell)
         }
 }
 
-function coverOver() {
-    document.getElementById("overlay").style.display = "block";
+function updateStats(firstMove=false){
+    let stats = document.getElementById("stats")
+    if (firstMove) {
+        stats.innerText = `probabilità di trovare una mina: 0%\nla prima è sicura ;)`
+        return
+    }
+    stats.innerText = `probabilità di trovare una mina: ${Math.round(MINES/HIDDENS_CELL*1000)/10}% (${MINES}/${HIDDENS_CELL})`
+}
+
+function victory() {
+
 }
 
 function deleteChildren() {
