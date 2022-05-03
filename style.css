@@ -59,8 +59,7 @@ body{
     margin: 0;
     padding: 0;
     width: 100%;
-    background-repeat: no-repeat;
-    background-position: center;
+    background: no-repeat center;
     background-size: cover;
 }
 
@@ -74,10 +73,15 @@ body{
 }
 
 #overlay {
-    display: none; z-index: 99;
-    width: 100%; height: 100%;
-    position: absolute; top: 0; left: 0;
-    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    position: absolute;
+    text-align: center;
+    font-size: 40px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 99;
 }
 
 #to-cover{
