@@ -27,7 +27,6 @@ function updateCells(row, column) {
         return
     }
 
-    alert("fai schifo")
     for (const mine of minesPosition)
         setCellsState(mine[0], mine[1], false)
 
