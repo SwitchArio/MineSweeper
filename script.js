@@ -11,12 +11,12 @@ playButton.onclick  = () => {
     document.getElementById('overlay').style.display = 'none';
     alreadyCreated = false;
 
-    let value, labels = document.getElementById("level").children
+    let index, mines, labels = document.getElementById("level").children
     for (let label of labels)
         if (label.firstElementChild.checked)
-            value = label.firstElementChild.value.split("-")
+            [index, mines] = label.firstElementChild.value.split("-")
 
-    setGrid(eval(value[0]), eval(value[0]), eval(value[1]));
+    setGrid(eval(index), eval(index), eval(mines));
 }
 
 // Logic
@@ -27,8 +27,8 @@ function updateCells(row, column) {
         return
     }
 
-    for (const mine of minesPosition)
-        setCellsState(mine[0], mine[1], false)
+    for (const [mineRow, mineColumn] of minesPosition)
+        setCellsState(mineRow, mineColumn, false)
 
     gameOver(false)
 
@@ -100,16 +100,17 @@ function createMap(r, c, index, numberOfMines) {
 }
 
 function getMinesPosition(r, c, index, numberOfMines) {
+    let alreadyExists = (a1, a2) => a1.some(item => JSON.stringify(item) == JSON.stringify(a2))
     let safeCells = getNeighbours(r, c)
-    let mineRow, mineColumn, minesPlaced = 0, mPosition = []
+    let newMineRow, newMineColumn, minesPlaced = 0, mPosition = []
 
     while (minesPlaced < numberOfMines){
-        mineRow = Math.floor(Math.random() * index);
-        mineColumn = Math.floor(Math.random() * index);
-        if (safeCells.some(item => JSON.stringify(item) == JSON.stringify([mineRow, mineColumn]))) continue
-        if (mPosition.some(item => JSON.stringify(item) == JSON.stringify([mineRow, mineColumn]))) continue
+        newMineRow = Math.floor(Math.random() * index);
+        newMineColumn = Math.floor(Math.random() * index);
+        if (alreadyExists(safeCells, [newMineRow, newMineColumn])) continue
+        if (alreadyExists(mPosition, [newMineRow, newMineColumn])) continue
         minesPlaced++
-        mPosition.push([mineRow, mineColumn])
+        mPosition.push([newMineRow, newMineColumn])
     }
     minesPosition = Array.from(mPosition)
     return mPosition
